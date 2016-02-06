@@ -1,0 +1,21 @@
+<div ng-include="'partials/header.html'"></div>
+<main>
+	<ul class="list-group">
+		<li ng-repeat="album in albums.items | orderBy:'-mid'" class="list-group-item">
+			<div class="media">
+				<div class="media-left media-middle">
+					<img class="media-object" src="{{album.imageUrl}}">
+				</div>
+				<div class="media-body">
+					<h2  class="media-heading"><a ng-href="#/album/{{album.mid}}">{{album.title}}</a></h2>
+					<h4>{{album.artist}}</h4>
+					<p class="text-gray-light" ng-repeat="description in album.descriptions">{{description.value}}</p>
+				</div>
+				<div class="play-button-div">
+					<a class="play-button" ng-href="#/album/{{album.mid}}?play=true"></a>
+				</div>
+			</div>
+		</li>
+	</ul>
+</main>
+<div ng-include="'partials/footer.html'"></div>

@@ -1,0 +1,16 @@
+{
+  "name": "luisterpaal.fm",
+  "description": "Scrobbling the vpro luisterpaal",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kroonprins/luisterpaal.fm",
+  "license": "",
+  "private": false,
+  "dependencies": {
+    "bootstrap": "~3.3.6",
+    "jquery": "~2.2.0",
+    "angular": "~1.4.9",
+    "angular-route": "~1.4.9",
+    "angular-resource": "~1.4.9",
+    "js-cookie": "~2.1.0"
+  }
+}

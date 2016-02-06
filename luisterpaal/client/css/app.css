@@ -1,0 +1,151 @@
+@media screen and (min-width: 800px) {
+    body { 
+		padding-top: 70px;
+		padding-bottom: 70px;
+	}
+}
+@media only screen and (max-width: 800px) {
+    body { 
+		padding-top: 190px;
+		padding-bottom: 190px;
+	}
+}
+
+/*Override bootstrap standard font*/
+body {
+	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
+}
+.tooltip {
+	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
+}
+.popover {
+	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
+}
+
+.user-logo {
+	border-bottom-left-radius: 16px;
+	border-bottom-right-radius: 16px;
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+	vertical-align: middle;
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	margin-top: 9px;
+}
+
+.navbar-right {
+    margin-right: 0px;
+}
+
+.text-gray-light {
+	color: #ccc;
+}
+.text-white {
+	color: #fff;
+}
+
+.play-button-div {
+	height: 28px;
+	left: 30px;
+	position: absolute;
+	top: 120px;
+	width: 28px;
+}
+
+.play-button {
+	background: url("../img/play_add_24px_sprite_dia.png") no-repeat left top;
+	width: 28px;
+	height: 28px;
+	display: block;
+	float: left;
+	position: relative;
+	text-decoration: none;
+	overflow: hidden;
+}
+
+a {
+    color: rgb(185, 0, 0);
+}
+
+.btn-default {
+    color: #fff;
+    background-color: #b90000;
+    border-color: #b90000;
+}
+.btn-default:hover {
+	color: #fff;
+    background-color: #d50000;
+    color: #fff;
+    border-color: #d50000;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    color: #fff;
+}
+
+.navbar-brand {
+	padding-top: 0px;
+}
+
+.player-control {
+	/*background-image: url("../img/player_controls.png");*/
+	height: 50px;
+	width: 50px;
+	/*background-repeat: no-repeat;
+	position: absolute;
+	right: auto;
+	color: transparent !important;
+	text-shadow: none;*/
+	background-color: transparent;
+	border: none;
+	outline: none;
+}
+
+/*.player-play {
+ 	background-position: -80px 0;
+}
+.player-previous {
+ 	background-position: -40px 0;
+}
+.player-next {
+ 	background-position: -160px 0;
+}
+.player-love {
+ 	background-position: -200px 0;
+}*/
+.player-control-item {
+ 	width: 50px;
+ 	height: 50px;
+ 	display: inline-block;
+ 	font-size: 20px;
+ 	text-align: center;
+}
+
+.player-control-row {
+	height: 50px;
+}
+
+.text-right {
+	text-align: right;
+}
+
+.float-right {
+	float: right;
+}
+
+.float-left {
+	float: left;
+}
+
+.song-in-list {
+	width: 100%;
+	height: 100%;
+	background-color: transparent;
+    border: none;
+    outline: none;
+}
+
+.song-in-list-playing {
+	background-color: #eee;
+}

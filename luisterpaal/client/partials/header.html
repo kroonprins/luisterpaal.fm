@@ -1,0 +1,29 @@
+<nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">
+				<img src="/img/logo_new.png"></img>
+			</a>
+		</div>
+		<ul class="nav navbar-nav navbar-right" ng-hide="!lastfmSessionExists">
+			<li>
+				<img class="user-logo" src="/img/user_icon.png"></img>
+			</li>
+			<li>
+				<a class="navbar-link" ng-href="http://www.last.fm/user/{{lastfmUser}}" target="_blank">{{lastfmUser}}</a>
+			</li>
+			<li>
+				<button type="button" class="btn btn-default navbar-btn" ng-click="lastfmLogout()">Logout</button>
+			</li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right" ng-hide="lastfmSessionExists">
+			<li>
+				<p class="navbar-text">U bent niet ingelogd. Wat u beluistert wordt momenteel niet gescrobbled.</p>
+				<p ng-hide="!loginFailure" class="navbar-text">Er ging iets mis bij het inloggen...</p>
+			</li>
+			<li>
+				<button type="button" class="btn btn-default navbar-btn" ng-click="lastfmLogin()">Login</button>
+			</li>
+		</ul>
+	</div>
+</nav>

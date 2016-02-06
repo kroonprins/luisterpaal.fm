@@ -1,0 +1,5 @@
+/node_modules/*
+/luisterpaal/client/ext/*
+retrieve_log.sh
+analyze_log.sh
+nodejs.log
