@@ -26,10 +26,19 @@ exports.createSession = function(token) {
 		var session = data.session;
 		if (session && session.key && session.name) {
 			console.log('%s: Session successfully created for user %s and key %s', Date(Date.now()), session.name, session.key);
-			deferred.resolve({
+			var response = {
 				key: session.key,
 				name: session.name
-			});
+			};
+			var user = getUserInfo(session.name).then(function(userInfo) {
+				response['image'] = getUserImage(userInfo);
+				response['url'] = getUserUrl(userInfo);
+				deferred.resolve(response);
+			}).fail(function(msg) {
+				// failure not not blocking
+				deferred.resolve(response);
+			})
+
 		} else {
 			deferred.reject("An error occurred when requesting a session from last.fm (no error response but unexpected response content. Received response: " + JSON.stringify(data));
 		}
@@ -81,7 +90,9 @@ function submit(session_key, song_data, params) {
 	}).then(function(data) {
 		var stringified = JSON.stringify(data);
 		console.log('%s: Success: %s', Date(Date.now()), stringified);
-		deferred.resolve({ response: stringified });
+		deferred.resolve({
+			response: stringified
+		});
 	}).fail(function(XMLHttpRequest, textStatus, errorThrown) {
 		deferred.reject("An error occurred when submitting the action " + params.method + " to last.fm. Reason: " + textStatus + " / " + errorThrown);
 	});
@@ -108,3 +119,33 @@ function getApiSignature(params) {
 
 	return jquery_md5.md5(string);
 };
+
+function getUserInfo(name) {
+	var deferred = new $.Deferred;
+	var url = REST_URL + "?method=user.getinfo&format=json&api_key=" + API_KEY + "&user=" + name;
+
+	najax({
+		type: "GET",
+		dataType: 'json',
+		url: url
+	}).then(function(data) {
+		console.log('%s: Success getting user info: %s', Date(Date.now()), JSON.stringify(data));
+		deferred.resolve(data);
+	}).fail(function(XMLHttpRequest, textStatus, errorThrown) {
+		deferred.reject("An error occurred when getting user " + name + " info. Reason: " + textStatus + " / " + errorThrown);
+	});
+	return deferred.promise();
+}
+
+function getUserImage(user) {
+	var images = user.user.image;
+	for (var i = 0; i < images.length; i++) {
+		var val = images[i];
+		if (val.size === "small") {
+			return val['#text'];
+		}
+	}
+}
+function getUserUrl(user) {
+	return user.user.url;
+}

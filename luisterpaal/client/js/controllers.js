@@ -1,6 +1,8 @@
 'use strict';
 var SESSION_COOKIE_KEY = "key";
 var SESSION_COOKIE_USER = "name";
+var SESSION_COOKIE_IMG = "image";
+var SESSION_COOKIE_URL = "url";
 var AUTH_URL = "http://www.last.fm/api/auth/";
 var API_KEY = "d7bb6297b6dc603b3eab560943beea1a"; // public api key
 
@@ -16,8 +18,7 @@ luisterpaalControllers.controller('LuisterpaalAbstractParentCtrl', ['$scope', '$
 		};
 
 		$scope.lastfmLogout = function() {
-			Cookies.remove(SESSION_COOKIE_USER);
-			Cookies.remove(SESSION_COOKIE_KEY);
+			removeCookies();
 			$rootScope.lastfmSessionExists = false;
 			$rootScope.lastfmUser = "";
 			$rootScope.lastfmSessionKey = "";
@@ -25,16 +26,47 @@ luisterpaalControllers.controller('LuisterpaalAbstractParentCtrl', ['$scope', '$
 			//TODO remove token from url
 		};
 
-		if ($rootScope.lastfmSessionExists) {
+		function removeCookies() {
+			Cookies.remove(SESSION_COOKIE_USER);
+			Cookies.remove(SESSION_COOKIE_KEY);
+			Cookies.remove(SESSION_COOKIE_IMG);
+			Cookies.remove(SESSION_COOKIE_URL);
+		}
+
+		function fillRootScopeFromCookies() {
 			if (!$rootScope.lastfmUser) {
 				$rootScope.lastfmUser = Cookies.get(SESSION_COOKIE_USER);
 			}
 			if (!$rootScope.lastfmSessionKey) {
 				$rootScope.lastfmSessionKey = Cookies.get(SESSION_COOKIE_KEY);
 			}
+			var fallbackImg = "/img/user_icon.png";
+			if (!$rootScope.lastfmSessionImg || $rootScope.lastfmSessionImg === fallbackImg) {
+				$rootScope.lastfmSessionImg = Cookies.get(SESSION_COOKIE_IMG);
+				if (!$rootScope.lastfmSessionImg) {
+					$rootScope.lastfmSessionImg = fallbackImg;
+				}
+			}
+			$rootScope.lastfmSessionUrl = Cookies.get(SESSION_COOKIE_URL);
+			if (!$rootScope.lastfmSessionUrl) {
+				$rootScope.lastfmSessionUrl = "http://www.last.fm/user/" + $rootScope.lastfmUser;
+			}
+		}
+
+		function setCookies(data) {
+			var options = {
+				expires: 365
+			};
+			Cookies.set(SESSION_COOKIE_USER, data.name, options);
+			Cookies.set(SESSION_COOKIE_KEY, data.key, options);
+			Cookies.set(SESSION_COOKIE_IMG, data.image, options);
+			Cookies.set(SESSION_COOKIE_URL, data.url, options);
+		}
+
+		if ($rootScope.lastfmSessionExists) {
+			fillRootScopeFromCookies();
 		} else {
-			$rootScope.lastfmUser = Cookies.get(SESSION_COOKIE_USER);
-			$rootScope.lastfmSessionKey = Cookies.get(SESSION_COOKIE_KEY);
+			fillRootScopeFromCookies();
 			if ($rootScope.lastfmUser && $rootScope.lastfmSessionKey) {
 				$rootScope.lastfmSessionExists = true;
 			} else {
@@ -45,10 +77,8 @@ luisterpaalControllers.controller('LuisterpaalAbstractParentCtrl', ['$scope', '$
 					LastfmApiConnector.getSession(token).then(function(d) {
 						if (d.name && d.key) {
 							$rootScope.lastfmSessionExists = true;
-							$rootScope.lastfmUser = d.name;
-							$rootScope.lastfmSessionKey = d.key;
-							Cookies.set(SESSION_COOKIE_USER, $rootScope.lastfmUser, { expires: 365 });
-							Cookies.set(SESSION_COOKIE_KEY, $rootScope.lastfmSessionKey, { expires: 365 });
+							setCookies(d);
+							fillRootScopeFromCookies();
 							$rootScope.loginFailure = false;
 						} else {
 							$rootScope.loginFailure = true;

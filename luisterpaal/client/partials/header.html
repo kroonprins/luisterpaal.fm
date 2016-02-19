@@ -7,10 +7,10 @@
 		</div>
 		<ul class="nav navbar-nav navbar-right" ng-hide="!lastfmSessionExists">
 			<li>
-				<img class="user-logo" src="/img/user_icon.png"></img>
+				<img class="user-logo" ng-src="{{lastfmSessionImg}}"></img>
 			</li>
 			<li>
-				<a class="navbar-link" ng-href="http://www.last.fm/user/{{lastfmUser}}" target="_blank">{{lastfmUser}}</a>
+				<a class="navbar-link" ng-href="{{lastfmSessionUrl}}" target="_blank">{{lastfmUser}}</a>
 			</li>
 			<li>
 				<button type="button" class="btn btn-default navbar-btn" ng-click="lastfmLogout()">Logout</button>
