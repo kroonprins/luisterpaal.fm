@@ -1,11 +1,11 @@
-@media screen and (min-width: 800px) {
-    body { 
+@media screen and (min-width: 815px) {
+    body {
 		padding-top: 70px;
 		padding-bottom: 70px;
 	}
 }
-@media only screen and (max-width: 800px) {
-    body { 
+@media only screen and (max-width: 815px) {
+    body {
 		padding-top: 190px;
 		padding-bottom: 190px;
 	}
@@ -31,11 +31,11 @@ body {
 	border-radius: 50%;
 	width: 32px;
 	height: 32px;
-	margin-top: 9px;
+	/*margin-top: 9px;*/
 }
 
-.navbar-right {
-    margin-right: 0px;
+.navbar-nav {
+  margin-right: 0px;
 }
 
 .text-gray-light {
@@ -148,4 +148,9 @@ a {
 
 .song-in-list-playing {
 	background-color: #eee;
+}
+
+.tooltip-info .tooltip-inner {
+	text-align: left;
+	min-width: 300px;
 }
