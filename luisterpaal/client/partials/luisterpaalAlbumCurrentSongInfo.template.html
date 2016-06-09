@@ -1,0 +1,2 @@
+<h4 class="text-right" ng-hide="playbackError"><span class="text-gray-light">{{currentSong.title ? 'Playing: ' : ''}}</span> {{currentSong | songFormat}}{{currentSong.artist && currentSong.artist != songs.album.artist ? currentSong.artist : ''}} {{scrobbled && !scrobbleError ? '(scrobbled)' : (scrobbleError ? '(scrobble gefaald!)' : '') }}</h4>
+<h4 class="text-right" ng-hide="!playbackError">An error occurred when trying to load this song. <br/>Reload the page to try again.</h4>

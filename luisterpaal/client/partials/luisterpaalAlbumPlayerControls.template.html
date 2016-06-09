@@ -1,0 +1,20 @@
+<div class="player-control-item">
+    <button type="button" class="player-control" ng-click="previous()">
+        <span class="glyphicon glyphicon-backward" aria-hidden="true"></span>
+    </button>
+</div>
+<div class="player-control-item">
+    <button type="button" class="player-control" ng-click="play(0)">
+        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+    </button>
+</div>
+<div class="player-control-item">
+    <button type="button" class="player-control" ng-click="next()">
+        <span class="glyphicon glyphicon-forward" aria-hidden="true"></span>
+    </button>
+</div>
+<div class="player-control-item">
+    <button type="button" class="player-control" scrobble-love-button scrobbling-song="{{currentSong}}" scrobbling-album="{{songs.album}}" scrobbling-session-key="{{$root.lastfmSessionKey}}">
+        <span class=" glyphicon glyphicon-heart " aria-hidden="true "></span>
+    </button>
+</div>

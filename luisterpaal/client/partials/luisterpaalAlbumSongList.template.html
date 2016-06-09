@@ -1,0 +1,5 @@
+<ul class="list-group">
+    <li class="list-group-item {{song.isPlaying ? 'song-in-list-playing' : 'song-in-list-not-playing'}}" ng-repeat="song in songs.items">
+        <button ng-click="play($index)" class="song-in-list"><span class="float-left">{{song | songFormat}}</span><span class="float-right">{{song.duration | songDuration}}</span></button>
+    </li>
+</ul>

@@ -1,28 +1,33 @@
 <!doctype html>
 <html lang="en" ng-app="luisterpaalApp">
-	<head>
-		<meta charset="utf-8">
-		<title>Luisterpaal.fm</title>
-		<link href="ext/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-		<link href="css/app.css" rel="stylesheet">
-		<script src="ext/jquery/dist/jquery.min.js"></script>
-		<script src="ext/js-cookie/src/js.cookie.js"></script>
-		<script src="ext/bootstrap/dist/js/bootstrap.min.js"></script>
-		<script src="ext/angular/angular.min.js"></script>
-		<script src="ext/angular-route/angular-route.min.js"></script>
-		<script src="ext/angular-resource/angular-resource.min.js"></script>
-		<script src="ext/angular-animate/angular-animate.js"></script>
-		<script src="ext/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-		<script src="js/utils.js"></script>
-		<script src="js/app.js"></script>
-		<script src="js/controllers.js"></script>
-		<script src="js/filters.js"></script>
-		<script src="js/services.js"></script>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	</head>
-	<body>
-		<div class="container">
-			<div ng-view></div>
-		</div>
-	</body>
+
+<head>
+	<meta charset="utf-8">
+	<title>Luisterpaal.fm</title>
+	<link href="ext/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="css/app.css" rel="stylesheet">
+	<script src="ext/jquery/dist/jquery.min.js"></script>
+	<script src="ext/js-cookie/src/js.cookie.js"></script>
+	<script src="ext/bootstrap/dist/js/bootstrap.min.js"></script>
+	<script src="ext/angular/angular.min.js"></script>
+	<script src="ext/angular-route/angular-route.min.js"></script>
+	<script src="ext/angular-resource/angular-resource.min.js"></script>
+	<script src="ext/angular-animate/angular-animate.js"></script>
+	<script src="ext/angular-PubSub/src/angular-pubsub.js"></script>
+	<script src="ext/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/app.js"></script>
+	<script src="js/controllers.js"></script>
+	<script src="js/filters.js"></script>
+	<script src="js/directives.js"></script>
+	<script src="js/services.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="container">
+		<div ng-view></div>
+	</div>
+</body>
+
 </html>

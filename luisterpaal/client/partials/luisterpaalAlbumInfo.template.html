@@ -1,0 +1,10 @@
+<div class="media">
+    <div class="media-left media-middle">
+        <img class="media-object" src="{{songs.album.imageUrl}}">
+    </div>
+    <div>
+        <h2 class="media-heading">{{songs.album.title}}</h2>
+        <h4>{{songs.album.artist}}</h4>
+        <p class="text-gray-light" ng-repeat="description in songs.album.descriptions">{{description.value}}</p>
+    </div>
+</div>

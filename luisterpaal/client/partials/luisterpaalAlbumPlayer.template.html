@@ -1,0 +1,31 @@
+<div class="row">
+    <audio id="audioPlayer"
+           controls
+           autoplay
+           type="audio/mpeg"
+           audio-volume-init="0.7"
+           enable-scrobbling
+           scrobbling-song="{{currentSong}}"
+           scrobbling-album="{{songs.album}}"
+           scrobbling-session-key="{{$root.lastfmSessionKey}}"
+           scrobble-event-pubsub-sub="scrobble-pubsub"
+           class="col-xs-8 col-xs-offset-2">
+        Your browser does not support the audio element.
+    </audio>
+</div>
+<div class="row">
+    <div class="col-md-3 col-md-offset-2 col-xs-10 col-xs-offset-2 player-control-row">
+        <luisterpaal-album-player-controls />
+    </div>
+    <div class="col-md-5 col-md-offset-0 col-xs-8 col-xs-offset-2 player-control-row">
+        <luisterpaal-album-current-song-info />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-5 col-md-offset-2 col-md-push-3 col-xs-8 col-xs-offset-2">
+        <luisterpaal-album-song-list />
+    </div>
+    <div class="col-md-3 col-md-offset-0 col-md-pull-5 col-xs-8 col-xs-offset-2">
+      <luisterpaal-album-info />
+    </div>
+</div>
