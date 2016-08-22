@@ -213,7 +213,7 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
             $scope.scrobbled = false;
             $scope.scrobbleError = false;
             PubSub.subscribe('scrobble-pubsub', function(topic, data) {
-                switch (data.event) {
+                switch (topic.event) {
                     case "scrobble_start":
                         $scope.scrobbled = false;
                         $scope.scrobbleError = false;
@@ -229,6 +229,7 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
                     default:
                         break;
                 }
+                $scope.$apply();
             })
         }
     }

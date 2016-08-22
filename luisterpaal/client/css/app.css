@@ -1,19 +1,8 @@
-@media screen and (min-width: 815px) {
-    body {
-		padding-top: 70px;
-		padding-bottom: 70px;
-	}
-}
-@media only screen and (max-width: 815px) {
-    body {
-		padding-top: 190px;
-		padding-bottom: 190px;
-	}
-}
-
 /*Override bootstrap standard font*/
 body {
 	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
+	padding-top: 70px;
+	padding-bottom: 70px;
 }
 .tooltip {
 	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
@@ -34,8 +23,19 @@ body {
 	/*margin-top: 9px;*/
 }
 
+.user-logo-icon {
+  padding-top: 10px;
+}
+
 .navbar-nav {
   margin-right: 0px;
+}
+
+.navbar-toggle {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-right: 0px;
+  padding-left: 0px;
 }
 
 .text-gray-light {
