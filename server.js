@@ -168,7 +168,7 @@ var LuisterpaalfmApp = function() {
                     defaultSrc: ["'self'"],
                     scriptSrc: ["'self'", "'unsafe-eval'"],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'http://images.poms.omroep.nl'],
+                    imgSrc: ["'self'", 'http://images.poms.omroep.nl', 'http//*.lst.fm'],
                     mediaSrc: ["'self'", 'http://*.omroep.nl'],
                 }
             }))
