@@ -1,6 +1,8 @@
 #!/bin/env node
- //  OpenShift sample Node application
+
 var express = require('express');
+var helmet = require('helmet')
+var express_enforces_ssl = require('express-enforces-ssl');
 
 
 /**
@@ -31,30 +33,6 @@ var LuisterpaalfmApp = function() {
             self.ipaddress = "127.0.0.1";
         };
     };
-
-
-    /**
-     *  Populate the cache.
-     */
-    // self.populateCache = function() {
-    //     if (typeof self.zcache === "undefined") {
-    //         self.zcache = {
-    //             'index.html': ''
-    //         };
-    //     }
-
-    //     //  Local cache for static content.
-    //     self.zcache['index.html'] = fs.readFileSync(__dirname + '/luisterpaal/client/index.html');
-    // };
-
-
-    /**
-     *  Retrieve entry (content) from cache.
-     *  @param {string} key  Key identifying content to retrieve from cache.
-     */
-    // self.cache_get = function(key) {
-    //     return self.zcache[key];
-    // };
 
 
     /**
@@ -163,13 +141,37 @@ var LuisterpaalfmApp = function() {
 
     /**
      *  Initialize the server (express) and create the routes and register
-     *  the handlers. 
+     *  the handlers.
      */
     self.initializeServer = function() {
         self.app = express();
+        self.app.enable('trust proxy');
+        self.app.use(helmet());
+
         if (process.env.NODE_ENV === "DEV") {
             console.log('%s: Using connect-livereload on server', Date(Date.now()));
             self.app.use(require('connect-livereload')());
+            self.app.use(helmet.contentSecurityPolicy({
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-eval'", 'http://localhost:*' ],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'", 'http://images.poms.omroep.nl', 'http//*.lst.fm'],
+                    mediaSrc: ["'self'", 'http://*.omroep.nl'],
+                    connectSrc: ["'self'", 'ws://localhost:*'],
+                }
+            }))
+        } else {
+            self.app.use(express_enforces_ssl());
+            self.app.use(helmet.contentSecurityPolicy({
+                directives: {
+                    defaultSrc: ["'self'"],
+                    scriptSrc: ["'self'", "'unsafe-eval'"],
+                    styleSrc: ["'self'", "'unsafe-inline'"],
+                    imgSrc: ["'self'", 'http://images.poms.omroep.nl'],
+                    mediaSrc: ["'self'", 'http://*.omroep.nl'],
+                }
+            }))
         }
         var bodyParser = require('body-parser');
         self.app.use(bodyParser.json()); // support json encoded bodies
