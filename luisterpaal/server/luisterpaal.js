@@ -26,6 +26,7 @@ requirejs(["vpro/api/v3/media/MediaService", "vpro/api/v3/location/LocationServi
 			members.items.forEach(function(member) {
 				result.items.push(completeAlbumInfo(member));
 			})
+			result.items = removeDuplicateAlbums(result.items);
 			deferred.resolve(result);
 		}).fail(function(apiError) {
 			deferred.reject("An error occurred when getting the list of albums from VPRO. Reason: " + apiError.status + " / " + apiError.message);
@@ -147,4 +148,20 @@ requirejs(["vpro/api/v3/media/MediaService", "vpro/api/v3/location/LocationServi
 		});
 		return result;
 	}
+
+	function removeDuplicateAlbums(items) {
+		var seen = {};
+		var out = [];
+		var len = items.length;
+		var j = 0;
+		for(var i = len - 1; i >= 0; i--) {
+			var item = items[i];
+			var discriminator = item.title.toLowerCase();
+			if(seen[discriminator] !== 1) {
+				seen[discriminator] = 1;
+				out[j++] = item;
+			}
+		}
+		return out;
+  }
 });
