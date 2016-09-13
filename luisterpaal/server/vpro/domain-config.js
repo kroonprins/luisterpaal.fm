@@ -3,7 +3,7 @@ if (typeof define !== 'function') {
 }
 
 define({
-    imageServer : "http://images.poms.omroep.nl/image/",
+    imageServer : "https://images.poms.omroep.nl/image/",
     jsServer: "https://js.vpro.nl",
     apiServer: "https://rs.vpro.nl",
     embedServer: "http://embed.vpro.nl",

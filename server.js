@@ -158,7 +158,7 @@ var LuisterpaalfmApp = function() {
                     styleSrc: ["'self'", "'unsafe-inline'"],
                     imgSrc: ["'self'", 'http://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
                     mediaSrc: ["'self'", 'http://*.omroep.nl'],
-                    connectSrc: ["'self'", 'ws://localhost:*'],
+                    connectSrc: ["'self'", 'ws://localhost:*', 'http://*.omroep.nl'],
                 }
             }))
         } else {
@@ -170,6 +170,7 @@ var LuisterpaalfmApp = function() {
                     styleSrc: ["'self'", "'unsafe-inline'"],
                     imgSrc: ["'self'", 'http://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
                     mediaSrc: ["'self'", 'http://*.omroep.nl'],
+                    connectSrc: ["'self'", 'http://*.omroep.nl'],
                 }
             }))
         }
