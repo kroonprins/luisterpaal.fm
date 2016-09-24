@@ -101,17 +101,48 @@ var LuisterpaalfmApp = function() {
         });
 
         var lastfm = require(__dirname + '/luisterpaal/server/lastfm.js');
+        // create session
         self.app.get('/api/lastfm/session/:token', function(req, res) {
             lastfm.createSession(req.params.token).then(function(result) {
-                res.json(result);
+                var secureCookie = true;
+                if (process.env.NODE_ENV === "DEV") {
+                  secureCookie = false;
+                }
+                var expiryDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // + 1 year (ignoring timezone client side)
+                res.cookie("lastfmSessionKey", result.key, { httpOnly: true, secure: secureCookie, expires: expiryDate, path: "/api/lastfm" });
+                res.json(result.data);
             }).fail(function(message) {
                 console.log('%s: Error occurred when calling lastfm.createSession. Message: %s', Date(Date.now()), message);
                 self._errorResponse(res, message);
             });
         });
+        // check if session exists (just checks if user has cookie with session key because last.fm doesn't seem to have a way to verify that session is valid)
+        self.app.get('/api/lastfm/session', function(req, res) {
+            var lastfmSessionKey = req.cookies.lastfmSessionKey;
+            if(!lastfmSessionKey) {
+              res.status("404").send("Session not found");
+            } else {
+              res.send(200);
+            }
+        });
+        // logout session
+        self.app.delete('/api/lastfm/session', function(req, res) {
+          console.log("delete session");
+            var lastfmSessionKey = req.cookies.lastfmSessionKey;
+            if(lastfmSessionKey) {
+              res.cookie("lastfmSessionKey", lastfmSessionKey, { path: "/api/lastfm", expires: new Date(0) });
+              // there doesn't seem to be a way to also logout the session on the side of last.fm
+            }
+            res.send(200);
+        });
         self.app.post('/api/lastfm/submit/listen', function(req, res) {
+            var lastfmSessionKey = req.cookies.lastfmSessionKey;
+            if(!lastfmSessionKey) {
+              self._errorResponse(res, "No session exists");
+            }
+
             var data = req.body;
-            lastfm.submitNowListening(data.session_key, data.song).then(function(result) {
+            lastfm.submitNowListening(lastfmSessionKey, data.song).then(function(result) {
                 res.json(result);
             }).fail(function(message) {
                 console.log('%s: Error occurred when calling lastfm.submitNowListening. Message: %s', Date(Date.now()), message);
@@ -119,8 +150,13 @@ var LuisterpaalfmApp = function() {
             });
         });
         self.app.post('/api/lastfm/submit/scrobble', function(req, res) {
+            var lastfmSessionKey = req.cookies.lastfmSessionKey;
+            if(!lastfmSessionKey) {
+              self._errorResponse(res, "No session exists");
+            }
+
             var data = req.body;
-            lastfm.submitScrobble(data.session_key, data.song).then(function(result) {
+            lastfm.submitScrobble(lastfmSessionKey, data.song).then(function(result) {
                 res.json(result);
             }).fail(function(message) {
                 console.log('%s: Error occurred when calling lastfm.submitScrobble. Message: %s', Date(Date.now()), message);
@@ -128,8 +164,13 @@ var LuisterpaalfmApp = function() {
             });
         });
         self.app.post('/api/lastfm/submit/love', function(req, res) {
+            var lastfmSessionKey = req.cookies.lastfmSessionKey;
+            if(!lastfmSessionKey) {
+              self._errorResponse(res, "No session exists");
+            }
+
             var data = req.body;
-            lastfm.submitLovedTrack(data.session_key, data.song).then(function(result) {
+            lastfm.submitLovedTrack(lastfmSessionKey, data.song).then(function(result) {
                 res.json(result);
             }).fail(function(message) {
                 console.log('%s: Error occurred when calling lastfm.submitLovedTrack. Message: %s', Date(Date.now()), message);
@@ -156,9 +197,9 @@ var LuisterpaalfmApp = function() {
                     defaultSrc: ["'self'"],
                     scriptSrc: ["'self'", "'unsafe-eval'", 'http://localhost:*' ],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
-                    mediaSrc: ["'self'", '*.omroep.nl'],
-                    connectSrc: ["'self'", 'ws://localhost:*', '*.omroep.nl'],
+                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
+                    mediaSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl' ],
+                    connectSrc: ["'self'", 'ws://localhost:*', 'http://*.omroep.nl', 'https://*.omroep.nl'],
                 }
             }))
         } else {
@@ -168,13 +209,15 @@ var LuisterpaalfmApp = function() {
                     defaultSrc: ["'self'"],
                     scriptSrc: ["'self'", "'unsafe-eval'"],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
-                    mediaSrc: ["'self'", '*.omroep.nl'],
-                    connectSrc: ["'self'", '*.omroep.nl'],
+                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
+                    mediaSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl'],
+                    connectSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl'],
                 }
             }))
         }
+        var cookieParser = require('cookie-parser')
         var bodyParser = require('body-parser');
+        self.app.use(cookieParser())
         self.app.use(bodyParser.json()); // support json encoded bodies
         self.app.use(bodyParser.urlencoded({
             extended: true

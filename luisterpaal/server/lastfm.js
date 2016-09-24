@@ -28,14 +28,16 @@ exports.createSession = function(token) {
 			console.log('%s: Session successfully created for user %s and key %s', Date(Date.now()), session.name, session.key);
 			var response = {
 				key: session.key,
-				name: session.name
+				data: {
+					name: session.name
+				}
 			};
 			var user = getUserInfo(session.name).then(function(userInfo) {
-				response['image'] = getUserImage(userInfo);
-				response['url'] = getUserUrl(userInfo);
+				response.data['image'] = getUserImage(userInfo);
+				response.data['url'] = getUserUrl(userInfo);
 				deferred.resolve(response);
 			}).fail(function(msg) {
-				// failure not not blocking
+				// failure not blocking
 				deferred.resolve(response);
 			})
 

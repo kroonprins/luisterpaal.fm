@@ -7,7 +7,7 @@
            enable-scrobbling
            scrobbling-song="{{currentSong}}"
            scrobbling-album="{{songs.album}}"
-           scrobbling-session-key="{{$root.lastfmSessionKey}}"
+           scrobbling-session-active="$root.lastfmSessionExists"
            scrobble-event-pubsub-sub="scrobble-pubsub"
            class="col-xs-8 col-xs-offset-2">
         Your browser does not support the audio element.

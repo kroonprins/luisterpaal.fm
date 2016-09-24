@@ -11,6 +11,10 @@ body {
 	font-family: "Open Sans", "Lucida Grande", "Helvetica Neue", Helvetica, Arial, Sans-serif;
 }
 
+.seo {
+	display: none;
+}
+
 .user-logo {
 	border-bottom-left-radius: 16px;
 	border-bottom-right-radius: 16px;

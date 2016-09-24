@@ -19,7 +19,7 @@
   "homepage": "http://fm-luisterpaal.rhcloud.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kroonprins/luisterpaal.fm.git"
+    "url": "ssh://56addd6189f5cf5e6d000166@fm-luisterpaal.rhcloud.com/~/git/fm.git/"
   },
   "engines": {
     "node": ">= 0.6.0",
@@ -28,6 +28,7 @@
   "dependencies": {
     "amdefine": "^1.0.0",
     "body-parser": "^1.14.2",
+    "cookie-parser": "^1.4.3",
     "dependency": "0.0.1",
     "express": "~3.4.4",
     "express-enforces-ssl": "^1.1.0",

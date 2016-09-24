@@ -39,16 +39,22 @@ luisterpaalServices.factory('LastfmApiConnector', ['$http',
                     });
                 return promise;
             },
-            submitNowPlaying: function(session_key, song, album) {
-                return this._submit("listen", this._prepareParam(session_key, song, album));
+            checkSession: function() {
+                return $http.get('/api/lastfm/session');
             },
-            submitScrobble: function(session_key, song, album, timestamp) {
-                var param = this._prepareParam(session_key, song, album);
+            logoutSession: function() {
+                return $http.delete('/api/lastfm/session');
+            },
+            submitNowPlaying: function(song, album) {
+                return this._submit("listen", this._prepareParam(song, album));
+            },
+            submitScrobble: function(song, album, timestamp) {
+                var param = this._prepareParam(song, album);
                 param.song.timestamp = timestamp;
                 return this._submit("scrobble", param);
             },
-            submitLovedTrack: function(session_key, song, album) {
-                return this._submit("love", this._prepareParam(session_key, song, album));
+            submitLovedTrack: function(song, album) {
+                return this._submit("love", this._prepareParam(song, album));
             },
             _submit: function(action, param) {
                 var promise = $http.post('/api/lastfm/submit/' + action, param)
@@ -57,9 +63,8 @@ luisterpaalServices.factory('LastfmApiConnector', ['$http',
                     });
                 return promise;
             },
-            _prepareParam: function(session_key, song, album) {
+            _prepareParam: function(song, album) {
                 return {
-                    session_key: session_key,
                     song: {
                         artist: song.artist,
                         title: song.title,
@@ -72,4 +77,24 @@ luisterpaalServices.factory('LastfmApiConnector', ['$http',
         }
         return service;
     }
+]);
+
+luisterpaalServices.factory('BrowserStorageService', ['$localStorage',
+  function($localStorage) {
+    var service = {
+      save: function(id, obj) {
+        $localStorage[id] = obj;
+      },
+      retrieve: function(id) {
+        return $localStorage[id];
+      },
+      remove: function(id) {
+        delete $localStorage[id];
+      },
+      clear: function() {
+        $localStorage.$reset();
+      }
+    }
+    return service;
+  }
 ]);

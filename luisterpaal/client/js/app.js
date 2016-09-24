@@ -6,6 +6,7 @@ var luisterpaalApp = angular.module('luisterpaalApp', [
     'ngRoute',
     'ui.bootstrap',
     'PubSub',
+    'ngStorage',
     'luisterpaalControllers',
     'luisterpaalFilters',
     'luisterpaalServices',

@@ -14,7 +14,7 @@
     </button>
 </div>
 <div class="player-control-item">
-    <button type="button" class="player-control" scrobble-love-button scrobbling-song="{{currentSong}}" scrobbling-album="{{songs.album}}" scrobbling-session-key="{{$root.lastfmSessionKey}}">
+    <button type="button" class="player-control" scrobble-love-button scrobbling-song="{{currentSong}}" scrobbling-album="{{songs.album}}" scrobbling-session-active="$root.lastfmSessionExists">
         <span class=" glyphicon glyphicon-heart " aria-hidden="true "></span>
     </button>
 </div>

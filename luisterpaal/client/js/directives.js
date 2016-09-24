@@ -16,81 +16,72 @@ luisterpaalDirectives.directive('luisterpaalHeader', function() {
         restrict: 'E',
         scope: false,
         templateUrl: "partials/luisterpaalHeader.template.html",
-        controller: function($scope, $rootScope, $location, LastfmApiConnector) {
-            var SESSION_COOKIE_KEY = "key";
-            var SESSION_COOKIE_USER = "name";
-            var SESSION_COOKIE_IMG = "image";
-            var SESSION_COOKIE_URL = "url";
+        controller: function($scope, $rootScope, $location, BrowserStorageService, LastfmApiConnector) {
+            var SESSION_USER = "name";
+            var SESSION_IMG = "image";
+            var SESSION_URL = "url";
             var AUTH_URL = "http://www.last.fm/api/auth/";
             var API_KEY = "d7bb6297b6dc603b3eab560943beea1a"; // public api key
 
             $scope.lastfmLogin = function() {
-                location.href = AUTH_URL + "?api_key=" + API_KEY + "&cb=" + removeParameterFromUrl(window.location.toString(), "token");
+                $scope.lastfmLogout().then(function() {
+                    location.href = AUTH_URL + "?api_key=" + API_KEY + "&cb=" + removeParameterFromUrl(window.location.toString(), "token");
+                });
             };
 
             $scope.lastfmLogout = function() {
-                removeCookies();
-                $rootScope.lastfmSessionExists = false;
-                $rootScope.lastfmUser = "";
-                $rootScope.lastfmSessionKey = "";
-                $rootScope.loginFailure = false;
-                //TODO remove token from url
+                return LastfmApiConnector.logoutSession().then(function() {
+                    $rootScope.lastfmSessionExists = false;
+                    $rootScope.lastfmUser = "";
+                    $rootScope.loginFailure = false;
+                    BrowserStorageService.clear();
+                    window.location = removeParameterFromUrl($location.absUrl(), "token");
+                });
             };
 
-            function removeCookies() {
-                Cookies.remove(SESSION_COOKIE_USER);
-                Cookies.remove(SESSION_COOKIE_KEY);
-                Cookies.remove(SESSION_COOKIE_IMG);
-                Cookies.remove(SESSION_COOKIE_URL);
-            }
-
-            function fillRootScopeFromCookies() {
+            function fillRootScopeFromStorage() {
                 if (!$rootScope.lastfmUser) {
-                    $rootScope.lastfmUser = Cookies.get(SESSION_COOKIE_USER);
-                }
-                if (!$rootScope.lastfmSessionKey) {
-                    $rootScope.lastfmSessionKey = Cookies.get(SESSION_COOKIE_KEY);
+                    $rootScope.lastfmUser = BrowserStorageService.retrieve(SESSION_USER);
                 }
                 var fallbackImg = "/img/user_icon.png";
                 if (!$rootScope.lastfmSessionImg || $rootScope.lastfmSessionImg === fallbackImg) {
-                    $rootScope.lastfmSessionImg = Cookies.get(SESSION_COOKIE_IMG);
+                    $rootScope.lastfmSessionImg = BrowserStorageService.retrieve(SESSION_IMG);
                     if (!$rootScope.lastfmSessionImg) {
                         $rootScope.lastfmSessionImg = fallbackImg;
                     }
                 }
-                $rootScope.lastfmSessionUrl = Cookies.get(SESSION_COOKIE_URL);
+                $rootScope.lastfmSessionUrl = BrowserStorageService.retrieve(SESSION_URL);
                 if (!$rootScope.lastfmSessionUrl) {
                     $rootScope.lastfmSessionUrl = "http://www.last.fm/user/" + $rootScope.lastfmUser;
                 }
             }
 
-            function setCookies(data) {
-                var options = {
-                    expires: 365
-                };
-                Cookies.set(SESSION_COOKIE_USER, data.name, options);
-                Cookies.set(SESSION_COOKIE_KEY, data.key, options);
-                Cookies.set(SESSION_COOKIE_IMG, data.image, options);
-                Cookies.set(SESSION_COOKIE_URL, data.url, options);
+            function saveToStorage(data) {
+                BrowserStorageService.save(SESSION_USER, data.name);
+                BrowserStorageService.save(SESSION_IMG, data.image);
+                BrowserStorageService.save(SESSION_URL, data.url);
             }
 
             if ($rootScope.lastfmSessionExists) {
-                fillRootScopeFromCookies();
+                fillRootScopeFromStorage();
             } else {
-                fillRootScopeFromCookies();
-                if ($rootScope.lastfmUser && $rootScope.lastfmSessionKey) {
-                    $rootScope.lastfmSessionExists = true;
-                } else {
+                LastfmApiConnector.checkSession().then(function() {
+                    fillRootScopeFromStorage();
+                    if ($rootScope.lastfmUser) {
+                        $rootScope.lastfmSessionExists = true;
+                    }
+                }).catch(function() {
                     // var token = $location.search().token;
                     // For some reason last.fm puts the token before the # making the angular search function fail miserably
                     var token = extractParameterFromUrl($location.absUrl(), "token");
                     if (token) {
                         LastfmApiConnector.getSession(token).then(function(d) {
-                            if (d.name && d.key) {
+                            if (d.name) {
                                 $rootScope.lastfmSessionExists = true;
-                                setCookies(d);
-                                fillRootScopeFromCookies();
+                                saveToStorage(d);
+                                fillRootScopeFromStorage();
                                 $rootScope.loginFailure = false;
+                                //window.location = removeParameterFromUrl($location.absUrl(), "token");
                             } else {
                                 $rootScope.loginFailure = true;
                             }
@@ -100,9 +91,8 @@ luisterpaalDirectives.directive('luisterpaalHeader', function() {
                     } else {
                         $scope.lastfmLogout();
                     }
-                }
+                });
             }
-
         }
     }
 });
@@ -271,24 +261,25 @@ luisterpaalDirectives.directive('enableScrobbling', function(LastfmApiConnector,
             var scrobblePoint = 0;
             var listenStart = 0;
             var scrobble_pubsub = attrs.scrobbleEventPubsubSub;
+            var activeSession = false;
+            scope.$watch(attrs.scrobblingSessionActive, function(scrobblingSessionActive) {
+                activeSession = scrobblingSessionActive;
+            });
 
             audioPlayer.onloadstart = function() {
-                var sessionKey = attrs.scrobblingSessionKey;
-                if (!sessionKey) {
+                if (!activeSession) {
                     return;
                 }
-                console.log("now playing");
                 var song = scope.$eval(attrs.scrobblingSong);
                 var album = scope.$eval(attrs.scrobblingAlbum);
-                LastfmApiConnector.submitNowPlaying(sessionKey, song, album); // We ignore any failure because not vitally important
+                LastfmApiConnector.submitNowPlaying(song, album); // We ignore any failure because not vitally important
                 listenStart = nowForLastfm();
                 pub({
                     event: "scrobble_start"
                 });
             }
             audioPlayer.ontimeupdate = function() {
-                var sessionKey = attrs.scrobblingSessionKey;
-                if (scope.scrobbled || !sessionKey) {
+                if (!activeSession || scope.scrobbled) {
                     return;
                 }
                 if (scrobblePoint <= 0) {
@@ -302,7 +293,7 @@ luisterpaalDirectives.directive('enableScrobbling', function(LastfmApiConnector,
                     scope.scrobbled = true;
                     var song = scope.$eval(attrs.scrobblingSong);
                     var album = scope.$eval(attrs.scrobblingAlbum);
-                    LastfmApiConnector.submitScrobble(sessionKey, song, album, listenStart).then(function(data) {
+                    LastfmApiConnector.submitScrobble(song, album, listenStart).then(function(data) {
                         pub({
                             event: "scrobble_success"
                         });
@@ -327,20 +318,21 @@ luisterpaalDirectives.directive('scrobbleLoveButton', function(LastfmApiConnecto
     return {
         restrict: 'A',
         link: function(scope, el, attrs) {
-            var sessionKey = attrs.scrobblingSessionKey;
-            if (!sessionKey) {
-                el[0].style.visibility = "hidden";
-            } else {
-                el[0].style.visibility = "visible";
-                el.on('click', function() {
-                    var song = scope.$eval(attrs.scrobblingSong);
-                    if (!song || !sessionKey) {
-                        return;
-                    }
-                    var album = scope.$eval(attrs.scrobblingAlbum);
-                    LastfmApiConnector.submitLovedTrack(sessionKey, song, album);
-                })
-            }
+            scope.$watch(attrs.scrobblingSessionActive, function(scrobblingSessionActive) {
+                if (!scrobblingSessionActive) {
+                    el[0].style.visibility = "hidden";
+                } else {
+                    el[0].style.visibility = "visible";
+                    el.on('click', function() {
+                        var song = scope.$eval(attrs.scrobblingSong);
+                        if (!song || !sessionKey) {
+                            return;
+                        }
+                        var album = scope.$eval(attrs.scrobblingAlbum);
+                        LastfmApiConnector.submitLovedTrack(song, album);
+                    })
+                }
+            });
         }
 
     }
