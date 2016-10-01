@@ -127,7 +127,6 @@ var LuisterpaalfmApp = function() {
         });
         // logout session
         self.app.delete('/api/lastfm/session', function(req, res) {
-          console.log("delete session");
             var lastfmSessionKey = req.cookies.lastfmSessionKey;
             if(lastfmSessionKey) {
               res.cookie("lastfmSessionKey", lastfmSessionKey, { path: "/api/lastfm", expires: new Date(0) });

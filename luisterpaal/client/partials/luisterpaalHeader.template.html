@@ -10,26 +10,31 @@
             </button>
         </div>
         <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right" ng-hide="!lastfmSessionExists">
-              <li class="nav">
-                  <div class="float-right">
-                      <img class="user-logo" ng-src="{{lastfmSessionImg}}"></img>
-                      <a class="navbar-link" ng-href="{{lastfmSessionUrl}}" target="_blank">{{lastfmUser}}</a>
-                      <button type="button" class="btn btn-default navbar-btn" ng-click="lastfmLogout()">Logout</button>
-                  </div>
-              </li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right" ng-hide="lastfmSessionExists">
-              <li class="nav">
-                  <div>
-                      <button type="button" class="btn btn-default navbar-btn float-right" ng-click="lastfmLogin()">Login</button>
-                  </div>
-              </li>
-          </ul>
+            <ul class="nav navbar-nav" ng-hide="playlistSize <= 0">
+                <li class="dropdown">
+                    <button type="button" class="btn btn-link navbar-btn" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="text-gray-light">Afspeellijst <span class="badge">{{playlistSize}}</span></span></button>
+                      <luisterpaal-playlist class="dropdown-menu"/>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li class="nav" ng-hide="!lastfmSessionExists">
+                    <div class="float-right">
+                        <img class="user-logo" ng-src="{{lastfmSessionImg}}"></img>
+                        <a class="navbar-link" ng-href="{{lastfmSessionUrl}}" target="_blank">{{lastfmUser}}</a>
+                        <button type="button" class="btn btn-default navbar-btn" ng-click="lastfmLogout()"><span class="text-gray-light">Logout</span></button>
+                    </div>
+                </li>
+                <li class="nav" ng-hide="lastfmSessionExists">
+                    <div>
+                        <button type="button" class="btn btn-default navbar-btn float-right" ng-click="lastfmLogin()"><span class="text-gray-light">Login</span></button>
+                    </div>
+                </li>
+            </ul>
         </div>
     </div>
 </nav>
 <section ng-hide="lastfmSessionExists">
-  <p class="text-right">U bent niet ingelogd. Wat u beluistert wordt momenteel niet gescrobbled.</p>
-  <p ng-hide="!loginFailure" class="text-right">Er ging iets mis bij het inloggen...</p>
+    <p class="text-right">U bent niet ingelogd. Wat u beluistert wordt momenteel niet gescrobbled.</p>
+    <p ng-hide="!loginFailure" class="text-right">Er ging iets mis bij het inloggen...</p>
 </section>

@@ -27,4 +27,20 @@ angular.module('luisterpaalFilters', []).filter('trusted', ['$sce', function($sc
             return "";
         }
     };
+}]).filter('zoom', [function() {
+    return function(smallUrl) {
+        if (smallUrl) {
+            return smallUrl.replace("s152x152", "s868x868");
+        } else {
+            return smallUrl;
+        }
+    };
+}]).filter('smallImage', [function() {
+    return function(smallUrl) {
+        if (smallUrl) {
+            return smallUrl.replace("s152x152", "s50x50");
+        } else {
+            return smallUrl;
+        }
+    };
 }]);

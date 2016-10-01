@@ -1,6 +1,7 @@
 <div class="media">
-    <div class="media-left media-middle">
+    <div class="media-left media-middle album-image">
         <img class="media-object" src="{{album.imageUrl}}">
+        <span class="zoom-icon glyphicon glyphicon-zoom-in" data-toggle="modal" data-target="#pictureModal-{{album.mid}}" />
     </div>
     <div class="media-body">
         <h2 class="media-heading"><a ng-href="#/album/{{album.mid}}">{{album.title}}</a></h2>
@@ -9,5 +10,18 @@
     </div>
     <div class="play-button-div">
         <a class="play-button" ng-href="#/album/{{album.mid}}?play=true"></a>
+    </div>
+    <div class="add-button-div">
+        <button type="link" class="btn btn-link add-button" ng-click="addAlbumToPlaylist(album)"></button>
+    </div>
+</div>
+<div ng-attr-id="pictureModal-{{album.mid}}" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <img class="img-responsive" src="{{album.imageUrl | zoom}}">
+            </div>
+        </div>
     </div>
 </div>

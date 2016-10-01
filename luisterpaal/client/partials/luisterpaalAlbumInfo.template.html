@@ -1,10 +1,21 @@
 <div class="media">
-    <div class="media-left media-middle">
-        <img class="media-object" src="{{songs.album.imageUrl}}">
+    <div class="media-left media-middle album-image">
+        <img class="media-object album-image" src="{{songs.album.imageUrl}}">
+        <span class="zoom-icon glyphicon glyphicon-zoom-in" data-toggle="modal" data-target="#pictureModal" />
     </div>
     <div>
         <h2 class="media-heading">{{songs.album.title}}</h2>
         <h4>{{songs.album.artist}}</h4>
         <p class="text-gray-light" ng-repeat="description in songs.album.descriptions">{{description.value}}</p>
+    </div>
+</div>
+<div id="pictureModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <img class="img-responsive" src="{{songs.album.imageUrl | zoom}}">
+            </div>
+        </div>
     </div>
 </div>

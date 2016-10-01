@@ -16,7 +16,7 @@ luisterpaalDirectives.directive('luisterpaalHeader', function() {
         restrict: 'E',
         scope: false,
         templateUrl: "partials/luisterpaalHeader.template.html",
-        controller: function($scope, $rootScope, $location, BrowserStorageService, LastfmApiConnector) {
+        controller: function($scope, $rootScope, $location, BrowserStorageService, LastfmApiConnector, PlaylistService) {
             var SESSION_USER = "name";
             var SESSION_IMG = "image";
             var SESSION_URL = "url";
@@ -34,7 +34,9 @@ luisterpaalDirectives.directive('luisterpaalHeader', function() {
                     $rootScope.lastfmSessionExists = false;
                     $rootScope.lastfmUser = "";
                     $rootScope.loginFailure = false;
-                    BrowserStorageService.clear();
+                    BrowserStorageService.remove(SESSION_USER);
+                    BrowserStorageService.remove(SESSION_IMG);
+                    BrowserStorageService.remove(SESSION_URL);
                     window.location = removeParameterFromUrl($location.absUrl(), "token");
                 });
             };
@@ -93,6 +95,12 @@ luisterpaalDirectives.directive('luisterpaalHeader', function() {
                     }
                 });
             }
+
+            $scope.$watch(function() {
+                return PlaylistService.getAlbums().length;
+            }, function(length) {
+                $scope.playlistSize = length;
+            })
         }
     }
 });
@@ -102,6 +110,32 @@ luisterpaalDirectives.directive('luisterpaalFooter', function() {
         restrict: 'E',
         scope: false,
         templateUrl: "partials/luisterpaalFooter.template.html",
+    }
+});
+
+luisterpaalDirectives.directive('luisterpaalPlaylist', function() {
+    return {
+        restrict: 'E',
+        replace: true,
+        scope: {},
+        templateUrl: "partials/luisterpaalPlaylist.template.html",
+        controller: function($scope, PlaylistService) {
+            $scope.getAlbums = function() {
+                return PlaylistService.getAlbums();
+            }
+            $scope.getPosition = function() {
+                return PlaylistService.getPosition();
+            }
+
+            $scope.removeAlbum = function($event, index) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                PlaylistService.removeAlbumAt(index);
+                if (index === 0) {
+                    PlaylistService.setPosition(0);
+                }
+            }
+        }
     }
 });
 
@@ -126,7 +160,12 @@ luisterpaalDirectives.directive('luisterpaalAlbum', function() {
         scope: {
             album: '='
         },
-        templateUrl: "partials/luisterpaalAlbum.template.html"
+        templateUrl: "partials/luisterpaalAlbum.template.html",
+        controller: function($scope, PlaylistService) {
+            $scope.addAlbumToPlaylist = function(album) {
+                PlaylistService.add(album);
+            }
+        }
     }
 });
 
@@ -147,7 +186,7 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
             autoPlay: '='
         },
         templateUrl: "partials/luisterpaalAlbumPlayer.template.html",
-        controller: function($scope, LuisterpaalApiConnector) {
+        controller: function($scope, $location, LuisterpaalApiConnector, PlaylistService) {
             $scope.audioPlayer = document.getElementById('audioPlayer');
             audioPlayer.onended = function() {
                 $scope.next();
@@ -161,6 +200,7 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
 
             LuisterpaalApiConnector.retrieveSongsForAlbum($scope.album).
             then(function(d) {
+                $scope.albumNotFound = false;
                 $scope.songs = d;
                 if ($scope.songs.items.length > 0) {
                     $scope.songs.items.sort(function(a, b) {
@@ -168,13 +208,48 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
                     });
                 }
                 if ($scope.autoPlay) {
-                    $scope.play(0);
+                    $scope.startAlbum();
                 }
+            }).catch(function() {
+                tryNextAlbum();
+                $scope.albumNotFound = true;
             });
 
+            function tryNextAlbum() {
+                var playlistAlbums = PlaylistService.getAlbums();
+                if (playlistAlbums.length > 0 && playlistAlbums[0].mid === $scope.album) {
+                    PlaylistService.removeAlbumAt(0);
+                    PlaylistService.setPosition(0);
+                }
+                playlistAlbums = PlaylistService.getAlbums();
+                if (playlistAlbums.length > 0) {
+                    // if the next album is the same as the current then $location.path doesn't start the scope afresh so we do it manually
+                    if (playlistAlbums[0].mid === $scope.album) {
+                        currentSongIdx = 0;
+                        $scope.startAlbum();
+                    } else {
+                        $location.path("/album/" + playlistAlbums[0].mid).search('play', 'true');
+                    }
+                }
+            }
+
             var currentSongIdx = 0;
+            $scope.startAlbum = function() {
+                var albums = PlaylistService.getAlbums();
+                var startPosition = 0;
+                if (albums.length <= 0 || $scope.songs.album.mid !== albums[0].mid) {
+                    PlaylistService.addCurrentAlbum($scope.songs.album);
+                } else {
+                    startPosition = PlaylistService.getPosition();
+                }
+                $scope.play(startPosition);
+            }
             $scope.play = function(index) {
-                if (index >= $scope.songs.items.length || index < 0) {
+                if (index < 0) {
+                    return;
+                }
+                if (index >= $scope.songs.items.length) {
+                    tryNextAlbum();
                     return;
                 }
                 $.map($scope.songs.items, function(val, i) {
@@ -184,6 +259,11 @@ luisterpaalDirectives.directive('luisterpaalAlbumPlayer', function(PubSub) {
                 $scope.audioPlayer.src = $scope.currentSong.location;
                 currentSongIdx = index;
                 $scope.playbackError = false;
+
+                var albums = PlaylistService.getAlbums();
+                if (albums.length > 0 && $scope.songs.album.mid === albums[0].mid) {
+                    PlaylistService.setPosition(index);
+                }
             };
             $scope.next = function() {
                 if (currentSongIdx < 0) {
@@ -325,7 +405,7 @@ luisterpaalDirectives.directive('scrobbleLoveButton', function(LastfmApiConnecto
                     el[0].style.visibility = "visible";
                     el.on('click', function() {
                         var song = scope.$eval(attrs.scrobblingSong);
-                        if (!song || !sessionKey) {
+                        if (!song) {
                             return;
                         }
                         var album = scope.$eval(attrs.scrobblingAlbum);

@@ -1,31 +1,36 @@
 <div class="row">
-    <audio id="audioPlayer"
-           controls
-           autoplay
-           type="audio/mpeg"
-           audio-volume-init="0.7"
-           enable-scrobbling
-           scrobbling-song="{{currentSong}}"
-           scrobbling-album="{{songs.album}}"
-           scrobbling-session-active="$root.lastfmSessionExists"
-           scrobble-event-pubsub-sub="scrobble-pubsub"
-           class="col-xs-8 col-xs-offset-2">
+    <audio id="audioPlayer" controls autoplay type="audio/mpeg" audio-volume-init="0.7" enable-scrobbling scrobbling-song="{{currentSong}}" scrobbling-album="{{songs.album}}" scrobbling-session-active="$root.lastfmSessionExists" scrobble-event-pubsub-sub="scrobble-pubsub"
+        class="col-xs-8 col-xs-offset-2">
         Your browser does not support the audio element.
     </audio>
 </div>
-<div class="row">
-    <div class="col-md-3 col-md-offset-2 col-xs-10 col-xs-offset-2 player-control-row">
-        <luisterpaal-album-player-controls />
+<div ng-hide="albumNotFound">
+    <div class="row">
+        <div class="col-md-3 col-md-offset-2 col-xs-10 col-xs-offset-2 player-control-row">
+            <luisterpaal-album-player-controls />
+        </div>
+        <div class="col-md-5 col-md-offset-0 col-xs-8 col-xs-offset-2 player-control-row">
+            <luisterpaal-album-current-song-info />
+        </div>
     </div>
-    <div class="col-md-5 col-md-offset-0 col-xs-8 col-xs-offset-2 player-control-row">
-        <luisterpaal-album-current-song-info />
+    <div class="row">
+        <div class="col-md-5 col-md-offset-2 col-md-push-3 col-xs-8 col-xs-offset-2">
+            <luisterpaal-album-song-list />
+        </div>
+        <div class="col-md-3 col-md-offset-0 col-md-pull-5 col-xs-8 col-xs-offset-2">
+            <luisterpaal-album-info />
+        </div>
+    </div>
+</div>
+<div ng-show="albumNotFound">
+    <div class="row">
+        <div class="col-md-10 col-md-offset-2 col-xs-8 col-xs-offset-2">
+            <h4>Oeioeioei, er ging iets mis bij het ophalen van het album...</h4>
+        </div>
     </div>
 </div>
 <div class="row">
-    <div class="col-md-5 col-md-offset-2 col-md-push-3 col-xs-8 col-xs-offset-2">
-        <luisterpaal-album-song-list />
-    </div>
-    <div class="col-md-3 col-md-offset-0 col-md-pull-5 col-xs-8 col-xs-offset-2">
-      <luisterpaal-album-info />
+    <div class="col-md-10 col-md-offset-2 col-xs-10 col-xs-offset-2">
+        <a href="/" class="btn btn-info"><span class="text-gray-light">Terug naar het overzicht</span></a>
     </div>
 </div>

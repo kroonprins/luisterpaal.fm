@@ -98,3 +98,39 @@ luisterpaalServices.factory('BrowserStorageService', ['$localStorage',
     return service;
   }
 ]);
+
+luisterpaalServices.factory('PlaylistService', ['BrowserStorageService',
+  function(BrowserStorageService) {
+    var service = {
+      add: function(album) {
+        var albums = this.getAlbums();
+        albums.push(album);
+        this.setAlbums(albums);
+      },
+      addCurrentAlbum: function(album) {
+        var albums = this.getAlbums();
+        albums.unshift(album);
+        this.setAlbums(albums);
+        this.setPosition(0);
+      },
+      getAlbums: function() {
+        return BrowserStorageService.retrieve('playlistAlbums') || [];
+      },
+      setAlbums: function(albums) {
+        return BrowserStorageService.save('playlistAlbums', albums);
+      },
+      getPosition: function() {
+        return BrowserStorageService.retrieve('playlistPosition') || 0;
+      },
+      setPosition: function(position) {
+        return BrowserStorageService.save('playlistPosition',position);
+      },
+      removeAlbumAt: function(index) {
+        var albums = this.getAlbums();
+        albums.splice(index, 1);
+        this.setAlbums(albums);
+      }
+    }
+    return service;
+  }
+]);
