@@ -4,19 +4,45 @@
 <head>
 	<meta charset="utf-8">
 	<title>Luisterpaal.fm</title>
+	<!-- Google Tag Manager -->
+	<script>
+		(function(w, d, s, l, i) {
+			w[l] = w[l] || [];
+			w[l].push({
+				'gtm.start': new Date().getTime(),
+				event: 'gtm.js'
+			});
+			var f = d.getElementsByTagName(s)[0],
+				j = d.createElement(s),
+				dl = l != 'dataLayer' ? '&l=' + l : '';
+			j.async = true;
+			j.src =
+				'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+			f.parentNode.insertBefore(j, f);
+		})(window, document, 'script', 'dataLayer', 'GTM-K5FG4X');
+	</script>
+	<!-- End Google Tag Manager -->
 	<link href="ext/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/app.css" rel="stylesheet">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
+	<!-- Google Tag Manager (noscript) -->
+	<noscript>
+		<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K5FG4X" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+	</noscript>
+	<!-- End Google Tag Manager (noscript) -->
+
 	<div class="seo">
-		<p>Via Luisterpaal.fm kan je de VPRO <a href="http://3voor12.vpro.nl/luisterpaal/albums.html" target="_blank">luisterpaal</a> albums scrobbelen naar <a href="http://www.last.fm" target="_blank">Last.fm</a>.</p>
+		<p>Via Luisterpaal.fm kan je de 3VOOR12 VPRO <a href="http://3voor12.vpro.nl/luisterpaal/albums.html" target="_blank">luisterpaal</a> albums scrobbelen naar <a href="http://www.last.fm" target="_blank">Last.fm</a>.</p>
 		<p>Gemaakt door <a ng-href="http://www.last.fm/user/kroonprins/" target="_blank">kroonprins</a>.</p>
 	</div>
+
 	<div class="container">
 		<div ng-view></div>
 	</div>
+
 	<script src="ext/jquery/dist/jquery.min.js"></script>
 	<script src="ext/js-cookie/src/js.cookie.js"></script>
 	<script src="ext/bootstrap/dist/js/bootstrap.min.js"></script>

@@ -366,7 +366,6 @@ luisterpaalDirectives.directive('enableScrobbling', function(LastfmApiConnector,
                     scrobblePoint = audioPlayer.duration * 0.6;
                 }
                 if (audioPlayer.currentTime > scrobblePoint) {
-                    console.log("scrobbled");
                     if (listenStart === 0) {
                         listenStart = nowForLastfm();
                     }

@@ -152,6 +152,17 @@ a {
     border-color: #d50000;
 }
 
+.navbar-inverse {
+  background: linear-gradient(black, white);
+  border-bottom-width: 0px;
+}
+.navbar-inverse-bottom {
+  background: linear-gradient(white, gray);
+  border-top-width: 0px;
+}
+.navbar-collapse {
+  border-top-width: 0px;
+}
 .navbar-inverse .navbar-nav>li>a {
     color: #fff;
 }

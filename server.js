@@ -1,9 +1,11 @@
 #!/bin/env node
 
 var express = require('express');
+var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser');
 var helmet = require('helmet')
 var express_enforces_ssl = require('express-enforces-ssl');
-
+var csrf = require('csurf');
 
 /**
  *  Define the sample application.
@@ -104,12 +106,8 @@ var LuisterpaalfmApp = function() {
         // create session
         self.app.get('/api/lastfm/session/:token', function(req, res) {
             lastfm.createSession(req.params.token).then(function(result) {
-                var secureCookie = true;
-                if (process.env.NODE_ENV === "DEV") {
-                  secureCookie = false;
-                }
                 var expiryDate = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // + 1 year (ignoring timezone client side)
-                res.cookie("lastfmSessionKey", result.key, { httpOnly: true, secure: secureCookie, expires: expiryDate, path: "/api/lastfm" });
+                res.cookie("lastfmSessionKey", result.key, { httpOnly: true, secure: self._secureCookie(), expires: expiryDate, path: "/api/lastfm" });
                 res.json(result.data);
             }).fail(function(message) {
                 console.log('%s: Error occurred when calling lastfm.createSession. Message: %s', Date(Date.now()), message);
@@ -185,18 +183,19 @@ var LuisterpaalfmApp = function() {
      */
     self.initializeServer = function() {
         self.app = express();
+
+        // security headers
         self.app.enable('trust proxy');
         self.app.use(helmet());
-
         if (process.env.NODE_ENV === "DEV") {
             console.log('%s: Using connect-livereload on server', Date(Date.now()));
             self.app.use(require('connect-livereload')());
             self.app.use(helmet.contentSecurityPolicy({
                 directives: {
                     defaultSrc: ["'self'"],
-                    scriptSrc: ["'self'", "'unsafe-eval'", 'http://localhost:*' ],
+                    scriptSrc: ["'self'", "'unsafe-eval'", "'sha256-nCIOYUK72RjFvhii+MAxhTjdPOIwWj+QKSu2u/paMBQ='", 'https://www.googletagmanager.com', 'https://www.google-analytics.com', 'http://www.google-analytics.com' ],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
+                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net', 'https://www.google-analytics.com', 'http://www.google-analytics.com'],
                     mediaSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl' ],
                     connectSrc: ["'self'", 'ws://localhost:*', 'http://*.omroep.nl', 'https://*.omroep.nl'],
                 }
@@ -206,21 +205,30 @@ var LuisterpaalfmApp = function() {
             self.app.use(helmet.contentSecurityPolicy({
                 directives: {
                     defaultSrc: ["'self'"],
-                    scriptSrc: ["'self'", "'unsafe-eval'"],
+                    scriptSrc: ["'self'", "'unsafe-eval'", "'sha256-nCIOYUK72RjFvhii+MAxhTjdPOIwWj+QKSu2u/paMBQ='", 'https://www.googletagmanager.com', 'https://www.google-analytics.com', 'http://www.google-analytics.com' ],
                     styleSrc: ["'self'", "'unsafe-inline'"],
-                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net'],
+                    imgSrc: ["'self'", 'https://images.poms.omroep.nl', 'http://*.lst.fm', 'https://lastfm-img2.akamaized.net', 'https://www.google-analytics.com', 'http://www.google-analytics.com'],
                     mediaSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl'],
                     connectSrc: ["'self'", 'http://*.omroep.nl', 'https://*.omroep.nl'],
                 }
             }))
         }
-        var cookieParser = require('cookie-parser')
-        var bodyParser = require('body-parser');
+
+        // cookie support
         self.app.use(cookieParser())
-        self.app.use(bodyParser.json()); // support json encoded bodies
+
+        // CSRF
+        self.app.use(csrf({ cookie: { secure: self._secureCookie(), httpOnly: true } }));
+        self.app.use(function(req, res, next) {
+          res.cookie('XSRF-TOKEN', req.csrfToken(), { secure: self._secureCookie(), httpOnly: false });
+          next();
+        });
+
+        // JSON encoded bodies
+        self.app.use(bodyParser.json());
         self.app.use(bodyParser.urlencoded({
             extended: true
-        })); // support encoded bodies
+        }));
 
         self.createRoutes();
     };
@@ -231,6 +239,14 @@ var LuisterpaalfmApp = function() {
         }
         response.status(500).send(message);
     };
+
+    self._secureCookie = function() {
+        if (process.env.NODE_ENV === "DEV") {
+          return false;
+        } else {
+          return true;
+        }
+    }
 
     /**
      *  Initializes the sample application.
